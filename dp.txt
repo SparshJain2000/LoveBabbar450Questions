@@ -1,9 +1,57 @@
 1. Coin ChangeProblem
+(1) Naīve Recursive method : 
+long long int count( int S[], int m, int n ){
+    if(n==0 || m==0) return 0;
+    if(S[m-1]<=n) {
+        if(S[m-1]==n) return count(S,m-1,n)+1LL;
+        return count(S,m,n-S[m-1])+count(S,m-1,n);
+    }
+    return count(S,m-1,n);
+}
+
+(2) Recursive with memoization : O(m*n) space, O(n*m) time;
+long long int util(int S[], int m, int n) {
+    if (n == 0 || m == 0) return 0;
+    if (dp[n][m] != -1) return dp[n][m];
+    if (S[m - 1] <= n) {
+        if (S[m - 1] == n) dp[n][m] = util(S, m - 1, n) + 1LL;
+        else dp[n][m] = util(S, m, n - S[m - 1]) + util(S, m - 1, n);
+    } else
+        dp[n][m] = util(S, m - 1, n);
+    return dp[n][m];
+}
+long long int count(int S[], int m, int n) {
+    dp = vector<vector<long long>>(n + 1, vector<long long>(m + 1, -1));
+    return util(S, m, n);
+}
+
+(3) Iterative(top-down) : O(m*n) space, O(n*m) time;
+vector<vector<long long>> dp;
+long long int count(int S[], int m, int n) {
+    vector<vector<long long>> dp(n + 1, vector<long long>(m + 1, 0));
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            dp[i][j] = dp[i][j - 1];
+            if (S[j - 1] == i)
+                dp[i][j] = dp[i][j - 1] + 1LL;
+            else if (S[j - 1] < i)
+                dp[i][j] = dp[i - S[j - 1]][j] + dp[i][j - 1];
+        }
+    }
+    return dp[n][m];
+}
 
 ----------------------------------------------
 2. Knapsack Problem
+(1) Naīve Recursive method : 
+int knapSack(int W, int wt[], int val[], int n) {
+    if (n <= 0 || W <= 0) return 0;
+    if (wt[n - 1] <= W)
+        return max(val[n - 1] + util(W - wt[n - 1], wt, val, n - 1), util(W, wt, val, n - 1));
+    return util(W, wt, val, n - 1);
+}
 
-(1) Recursive method with memoization : O(n*W) space, O(n*W) time
+(2) Recursive method with memoization : O(n*W) space, O(n*W) time
 vector<vector<int>> dp;
 int util(int W, int wt[], int val[], int n) {
     if (n <= 0 || W <= 0) return 0;
@@ -19,7 +67,7 @@ int knapSack(int W, int wt[], int val[], int n) {
     return util(W, wt, val, n);
 }
 
-(2) Iterative method : O(n*W) space, O(n*W) time
+(3) Iterative method : O(n*W) space, O(n*W) time
 int knapSack(int W, int wt[], int val[], int n) {
     vector<vector<int>> dp(W + 1, vector<int>(n + 1, 0));
     for (int i = 1; i <= W; i++)
@@ -47,14 +95,146 @@ int knapSack(int W, int wt[], int val[], int n) {
 ----------------------------------------------
 7. Edit Distance
 
+(1) Recursive with memoization : 
+vector<vector<int>> dp;
+int util(string s, string t, int x, int y) {
+    if (x == 0 && y == 0) return 0;
+    if (x == 0) return y;
+    if (y == 0) return x;
+    if (dp[x][y] != -1) return dp[x][y];
+    if (s[x - 1] == t[y - 1])
+        dp[x][y] = util(s, t, x - 1, y - 1);
+    else
+        dp[x][y] = 1 + min(util(s, t, x, y - 1), min(util(s, t, x - 1, y), util(s, t, x - 1, y - 1)));
+    return dp[x][y];
+}
+int editDistance(string s, string t) {
+    // Code here
+    int x = s.length();
+    int y = t.length();
+    dp = vector<vector<int>>(x + 1, vector<int>(y + 1, -1));
+    return util(s, t, x, y);
+}
+
+(2) Iterative :
+int editDistance(string s, string t) {
+    int x = s.length();
+    int y = t.length();
+    vector<vector<int>> dp(x + 1, vector<int>(y + 1, -1));
+    dp[0][0] = 0;
+    for (int i = 0; i <= x; i++) dp[i][0] = i;
+    for (int i = 0; i <= y; i++) dp[0][i] = i;
+    for (int i = 1; i <= x; i++)
+        for (int j = 1; j <= y; j++) {
+            if (s[i - 1] == t[j - 1])
+                dp[i][j] = dp[i - 1][j - 1];
+            else
+                dp[i][j] = 1 + min(dp[i - 1][j - 1], min(dp[i - 1][j], dp[i][j - 1]));
+        }
+    return dp[x][y];
+}
+
 ----------------------------------------------
 8. Subset Sum Problem
+
+(1) Naīve Recursive method :
+int util(int N,int arr[],int sum){
+    if(N==0 ) return sum==0;
+    if(N==0 && sum!=0) return 0;
+    if(arr[N-1]<=sum) 
+        return util(N-1,arr,sum-arr[N-1]) || util(N-1,arr,sum);
+    return util(N-1,arr,sum);
+}
+int equalPartition(int N, int arr[])
+{
+    int sum=0;
+    for(int i=0;i<N;i++) sum+=arr[i];
+    if(sum&1 || N<=1 ) return 0;
+    return util(N,arr,sum/2);
+}
+
+(2) Recursive method with memoization : O(N*sum/2) space, O(N*sum/2) time
+vector<vector<int>> dp;
+int util(int N, int arr[], int sum) {
+    if (N == 0) return sum == 0;
+    if (N == 0 && sum != 0) return 0;
+    if (dp[sum][N] != -1) return dp[sum][N];
+    if (arr[N - 1] <= sum) {
+        dp[sum][N] = util(N - 1, arr, sum - arr[N - 1]) || util(N - 1, arr, sum);
+    } else
+        dp[sum][N] = util(N - 1, arr, sum);
+    return dp[sum][N];
+}
+int equalPartition(int N, int arr[]) {
+    int sum = 0;
+    for (int i = 0; i < N; i++) sum += arr[i];
+    if (sum & 1 || N <= 1) return 0;
+    dp = vector<vector<int>>(sum / 2 + 1, vector<int>(N + 1, -1));
+    return util(N, arr, sum / 2);
+}
+
+(3) Iterative(TOP Down) : O(N*sum/2) space, O(N*sum/2) time
+int equalPartition(int N, int arr[]) {
+    int sum = 0;
+    for (int i = 0; i < N; i++) sum += arr[i];
+    if (sum & 1 || N <= 1) return 0;
+    vector<vector<int>>dp(sum / 2 + 1, vector<int>(N + 1, -1));
+    for (int i = 1; i <= sum / 2; i++) dp[i][0] = 0;
+    for (int i = 0; i <= N; i++) dp[0][i] = 1;
+    for (int i = 1; i <= sum / 2; i++)
+        for (int j = 1; j <= N; j++) {
+            if (i >= arr[j - 1])
+                dp[i][j] = dp[i - arr[j - 1]][j - 1] || dp[i][j - 1];
+            else
+                dp[i][j] = dp[i][j - 1];
+        }
+    return dp[sum / 2][N];
+}
 
 ----------------------------------------------
 9. Friends Pairing Problem
 
 ----------------------------------------------
 10. Gold Mine Problem
+
+(1) Naīve Recursive :
+int maxGold(int n, int m, vector<vector<int>> M) {
+    if (n > M.size()) return 0;
+    if (m == 0 || n == 0) return 0;
+    return M[n - 1][m - 1] + max(maxGold(n, m - 1, M), max(maxGold(n - 1, m - 1, M), maxGold(n + 1, m - 1, M)));
+}
+
+(2) Recursive with memoization : O(m*n) space, O(n*m) time;
+vector<vector<int>> dp;
+int util(int n, int m, vector<vector<int>> M) {
+    if (n > M.size() || m > M[0].size()) return 0;
+    if (m == 0 || n == 0) return 0;
+    if (dp[n][m] != -1) return dp[n][m];
+    dp[n][m] = M[n - 1][m - 1] + max(util(n, m + 1, M), max(util(n - 1, m + 1, M), util(n + 1, m + 1, M)));
+    return dp[n][m];
+}
+int maxGold(int n, int m, vector<vector<int>> M) {
+    dp = vector<vector<int>>(n + 1, vector<int>(m + 1, -1));
+    int ans = INT_MIN;
+    for (int i = 1; i <= n; i++) {
+        ans = max(ans, util(i, 1, M));
+    }
+    return ans;
+}
+
+(3) Iterative :  O(m*n) space, O(n*m) time;
+int maxGold(int n, int m, vector<vector<int>> M) {
+    dp = vector<vector<int>>(n + 1, vector<int>(m + 1, -1));
+    for (int i = 0; i < n; i++) dp[i][0] = 0;
+    for (int i = 0; i < m; i++) dp[0][i] = 0;
+    int ans = INT_MIN;
+    for (int j = 1; j <= m; j++)
+        for (int i = 1; i <= n; i++) {
+            dp[i][j] = M[i - 1][j - 1] + max(dp[i][j - 1], max((i == n) ? 0 : dp[i + 1][j - 1], dp[i - 1][j - 1]));
+            ans = max(ans, dp[i][j]);
+        }
+    return ans;
+}
 
 ----------------------------------------------
 11. Assembly Line SchedulingProblem
@@ -65,9 +245,82 @@ int knapSack(int W, int wt[], int val[], int n) {
 ----------------------------------------------
 13. Maximize The Cut Segments
 
+(1) Naīve Recursive :
+int maximizeTheCuts(int n, int x, int y, int z) {
+    if (n == 0) return 0;
+    int ans = -1;
+    if (x <= n) ans = max(ans, maximizeTheCuts(n - x, x, y, z));
+    if (y <= n) ans = max(ans, maximizeTheCuts(n - y, x, y, z));
+    if (z <= n) ans = max(ans, maximizeTheCuts(n - z, x, y, z));
+    return ans + 1;
+}
+
+(2) Recursive with memoization : O(N) time, O(N) space
+vector<int> dp;
+int util(int n, int x, int y, int z) {
+    if (n == 0) return 0;
+    int ans = -1;
+    if (dp[n] != -1) return dp[n];
+    if (x <= n) ans = max(ans, util(n - x, x, y, z));
+    if (y <= n) ans = max(ans, util(n - y, x, y, z));
+    if (z <= n) ans = max(ans, util(n - z, x, y, z));
+    dp[n] = ans == -1 ? INT_MIN : ans + 1;
+    return dp[n];
+}
+int maximizeTheCuts(int n, int x, int y, int z) {
+    dp = vector<int>(n, -1);
+    int ans = util(n, x, y, z);
+    return ans < 0 ? 0 : ans;
+}
+
+(3) Iterative : 
+int maximizeTheCuts(int n, int x, int y, int z) {
+    dp = vector<int>(n + 1, -1);
+    dp[0] = 0;
+
+    for (int i = 1; i <= n; i++) {
+        dp[i] = -1;
+        if (x <= i) dp[i] = max(dp[i], dp[i - x]);
+        if (y <= i) dp[i] = max(dp[i], dp[i - y]);
+        if (z <= i) dp[i] = max(dp[i], dp[i - z]);
+        if (dp[i] != -1) dp[i]++;
+    }
+    return dp[n] == -1 ? 0 : dp[n];
+}
+
 ----------------------------------------------
 14. Longest Common Subsequence
 
+(1) Recursive with memoization :
+vector<vector<int>> dp;
+int util(int x, int y, string s1, string s2) {
+    if (x > s1.length() || y > s2.length()) return 0;
+    if (dp[x][y] != -1) return dp[x][y];
+    if (s1[x - 1] == s2[y - 1])
+        dp[x][y] = 1 + util(x + 1, y + 1, s1, s2);
+    else
+        dp[x][y] = max(util(x, y + 1, s1, s2), util(x + 1, y, s1, s2));
+    return dp[x][y];
+}
+int lcs(int x, int y, string s1, string s2) {
+    dp = vector<vector<int>>(x + 1, vector<int>(y + 1, -1));
+    return util(1, 1, s1, s2);
+}
+
+(2) Iterative :
+int lcs(int x, int y, string s1, string s2) {
+    auto dp = vector<vector<int>>(x + 1, vector<int>(y + 1, -1));
+    for (int i = 0; i <= x; i++) dp[i][0] = 0;
+    for (int i = 0; i <= y; i++) dp[0][i] = 0;
+    for (int i = 1; i <= x; i++)
+        for (int j = 1; j <= y; j++) {
+            if (s1[i - 1] == s2[j - 1])
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+            else
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+        }
+    return dp[x][y];
+}
 ----------------------------------------------
 15. Longest Repeated Subsequence
 
@@ -105,6 +358,44 @@ int longestSubsequence(int n, int a[])
 ----------------------------------------------
 18. LCS (Longest Common Subsequence) of three strings
 
+(1) Recursive with memoization : O(n1*n2*n3) space,O(n1*n2*n3) time
+vector<vector<vector<int>>> dp;
+int util(string s1, string s2, string s3, int x, int y, int z) {
+    if (x > s1.length() || y > s2.length() || z > s3.length()) return 0;
+    if (dp[x][y][z] != -1) return dp[x][y][z];
+    if (s1[x - 1] == s2[y - 1] && s2[y - 1] == s3[z - 1])
+        dp[x][y][z] = 1 + util(s1, s2, s3, x + 1, y + 1, z + 1);
+    else
+        dp[x][y][z] = max(util(s1, s2, s3, x, y, z + 1), max(util(s1, s2, s3, x, y + 1, z), util(s1, s2, s3, x + 1, y, z)));
+    return dp[x][y][z];
+}
+int LCSof3(string s1, string s2, string s3, int x, int y, int z) {
+    dp = vector<vector<vector<int>>>(x + 1, vector<vector<int>>(y + 1, vector<int>(z + 1, -1)));
+    return util(s1, s2, s3, 1, 1, 1);
+}
+
+(2) Iterative : O(n1*n2*n3) space,O(n1*n2*n3) time
+int LCSof3(string s1, string s2, string s3, int x, int y, int z) {
+    vector<vector<vector<int>>> dp(x + 1, vector<vector<int>>(y + 1, vector<int>(z + 1, -1)));
+    for (int i = 0; i <= x; i++)
+        for (int j = 0; j <= y; j++)
+            for (int k = 0; k <= z; k++)
+                if (i == 0 || j == 0 || k == 0) dp[i][j][k] = 0;
+
+    for (int i = 1; i <= x; i++)
+        for (int j = 1; j <= y; j++)
+            for (int k = 1; k <= z; k++) {
+                if (s1[i - 1] == s2[j - 1] && s1[i - 1] == s3[k - 1])
+                    dp[i][j][k] = 1 + dp[i - 1][j - 1][k - 1];
+                else {
+                    dp[i][j][k] = max(dp[i][j][k], dp[i][j][k - 1]);
+                    dp[i][j][k] = max(dp[i][j][k], dp[i][j - 1][k]);
+                    dp[i][j][k] = max(dp[i][j][k], dp[i - 1][j][k]);
+                }
+            }
+    return dp[x][y][z] == -1 ? 0 : dp[x][y][z];
+}
+
 ----------------------------------------------
 19. Maximum Sum Increasing Subsequence
 
@@ -122,6 +413,24 @@ int longestSubsequence(int n, int a[])
 
 ----------------------------------------------
 24. Maximum Length Chain of Pairs
+
+int maxChainLen(struct val p[], int n) {
+    sort(p, p + n, [](struct val &a, struct val &b) {
+        return a.second < b.second;
+    });
+    vector<int> dp(n + 1, 1);
+    dp[0] = 0;
+    int pre = INT_MIN;
+    int ans = INT_MIN;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j < i; j++)
+            if (p[i - 1].first > p[j - 1].second)
+                dp[i] = max(dp[i], dp[j] + 1);
+        ;
+        ans = max(ans, dp[i]);
+    }
+    return ans;
+}
 
 ----------------------------------------------
 25. Maximum size square sub-matrix with all 1s
@@ -147,6 +456,17 @@ int longestSubsequence(int n, int a[])
 ----------------------------------------------
 32. Longest Common Substring
 
+int longestCommonSubstr(string s1, string s2, int x, int y) {
+    vector<vector<int>> dp(x + 1, vector<int>(y + 1, 0));
+    int ans = 0;
+    for (int i = 1; i <= x; i++)
+        for (int j = 1; j <= y; j++) {
+            if (s1[i - 1] == s2[j - 1]) dp[i][j] = 1 + dp[i - 1][j - 1];
+            ans = max(ans, dp[i][j]);
+        }
+    return ans;
+}
+
 ----------------------------------------------
 33. Count number of ways to reacha given score in a game
 
@@ -161,6 +481,17 @@ int longestSubsequence(int n, int a[])
 
 ----------------------------------------------
 37. Unbounded Knapsack (Repetition of items allowed)
+
+int knapSack(int n, int W, int val[], int wt[]) {
+    // code here
+    vector<int> dp(W + 1, 0);
+    for (int i = 0; i < n; i++)
+        for (int j = 1; j <= W; j++)
+            if (wt[i] <= j)
+                dp[j] = max(val[i] + dp[j - wt[i]], dp[j]);
+
+    return dp[W];
+}
 
 ----------------------------------------------
 38. Word Break Problem
@@ -230,5 +561,23 @@ int longestSubsequence(int n, int a[])
 
 ----------------------------------------------
 60. Maximum Length of Pair Chain
+
+int findLongestChain(vector<vector<int>>& p) {
+    sort(p.begin(), p.end(), [](auto &a, auto &b) {
+        return a[1] < b[1];
+    });
+    int n=p.size();
+    vector<int> dp(n + 1, 1);
+    dp[0] = 0;
+    int ans = INT_MIN;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j < i; j++)
+            if (p[i - 1][0] > p[j - 1][1])
+                dp[i] = max(dp[i], dp[j] + 1);
+        ;
+        ans = max(ans, dp[i]);
+    }
+    return ans;
+}
 
 ----------------------------------------------
