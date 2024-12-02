@@ -1,7 +1,9 @@
-1. Activity Selection Problem--- sort activities based on finish time, then include those meetings whose start time is after the finish time of previously selected meeting
+## 1. Activity Selection Problem
+sort activities based on finish time, then include those meetings whose start time is after the finish time of previously selected meeting
  
-here sorting using lambda of sort-----can also do pairsort algorithm
+here sorting using lambda of sort ---- can also do pairsort algorithm
 
+```cpp
 int maxMeetings(int start[], int end[], int n) {
     vector<pair<int, int>> v;
     for (int i = 0; i < n; i++) v.push_back({start[i], end[i]});
@@ -18,10 +20,10 @@ int maxMeetings(int start[], int end[], int n) {
         }
     return count;
 }
-
+```
 
 pairsort algorithm://sorting done based on the first element
-
+```cpp
 void pairsort(int start[],int end[],int n){
         pair<int,int>p[n];
         for(int i=0;i<n;i++){
@@ -34,17 +36,17 @@ void pairsort(int start[],int end[],int n){
             end[i]=p[i].first;
         }
 }
-       
+``` 
 
 -----------------------------------------------------
-2. Job SequencingProblem
+## 2. Job SequencingProblem
 
 -----------------------------------------------------
-3. Huffman Coding
+## 3. Huffman Coding
 
 -----------------------------------------------------
-4. Water Connection Problem
-
+## 4. Water Connection Problem
+```cpp
 vector<vector<int>> solve(int n, int p, vector<int> a, vector<int> b, vector<int> d) {
     vector<vector<int>> ans;
     vector<int> temp(20, 0);
@@ -66,10 +68,12 @@ vector<vector<int>> solve(int n, int p, vector<int> a, vector<int> b, vector<int
     }
     return ans;
 }
+```
 
 -----------------------------------------------------
-5. Fractional Knapsack Problem
+## 5. Fractional Knapsack Problem
 O(N*logN) time, O(1) space : Greedy on value per unit weight.
+```cpp
 double fractionalKnapsack(int W, Item arr[], int n)
 {
     sort(arr,arr+n,[](const Item& a,const Item& b){
@@ -83,16 +87,17 @@ double fractionalKnapsack(int W, Item arr[], int n)
     }
     return ans;
 }
+```
 
 -----------------------------------------------------
-6. Greedy Algorithm to find Minimum number of Coins
+## 6. Greedy Algorithm to find Minimum number of Coins
 
 -----------------------------------------------------
-7. Maximum trains for which stoppage can be provided
+## 7. Maximum trains for which stoppage can be provided
 
 -----------------------------------------------------
-8. Minimum Platforms Problem
-
+## 8. Minimum Platforms Problem
+```cpp
 typedef pair<int, int> pi;
 int findPlatform(int arr[], int dep[], int n) {
     vector<pi> v;
@@ -111,13 +116,14 @@ int findPlatform(int arr[], int dep[], int n) {
     }
     return ans;
 }
+```
 
 -----------------------------------------------------
-9. Buy Maximum Stocks if i stocks can be bought on i-th day
+## 9. Buy Maximum Stocks if i stocks can be bought on i-th day
 
 -----------------------------------------------------
-10. Find the minimum and maximum amount to buy all N candies
-
+## 10. Find the minimum and maximum amount to buy all N candies
+```cpp
 vector<int> candyStore(int candies[], int N, int k)
 {
     sort(candies,candies+N);
@@ -134,25 +140,26 @@ vector<int> candyStore(int candies[], int N, int k)
     }
     return vector<int>({min,max});
 }
+```
 
 -----------------------------------------------------
-11. Minimize Cash Flow among a given set of friends who have borrowed money from each other
+## 11. Minimize Cash Flow among a given set of friends who have borrowed money from each other
 
 -----------------------------------------------------
-12. Minimum Cost to cut a board into squares
+## 12. Minimum Cost to cut a board into squares
 
 -----------------------------------------------------
-13. Check if it is possible to survive on Island
+## 13. Check if it is possible to survive on Island
 
 -----------------------------------------------------
-14. Find maximum meetings in one room
+## 14. Find maximum meetings in one room
 
 -----------------------------------------------------
-15. Maximum product subset of an array
+## 15. Maximum product subset of an array
 
 -----------------------------------------------------
-16. Maximize array sum after K negations
-
+## 16. Maximize array sum after K negations
+```cpp
 long long int maximizeSum(long long int a[], int n, int k)
 {
     sort(a,a+n);
@@ -172,10 +179,11 @@ long long int maximizeSum(long long int a[], int n, int k)
     }
     return ans;
 }
+```
 
 -----------------------------------------------------
-17. Maximize the sum of arr[i]*i
-
+## 17. Maximize the sum of arr[i]*i
+```cpp
 int mod = 1e9 + 7;
 int Maximize(int a[], int n) {
     sort(a, a + n);
@@ -185,13 +193,14 @@ int Maximize(int a[], int n) {
 
     return ans % mod;
 }
+```
 
 -----------------------------------------------------
-18. Maximum sum of absolute difference of an array
+## 18. Maximum sum of absolute difference of an array
 
 -----------------------------------------------------
-19. Maximize sum of consecutive differences in a circular array
-
+## 19. Maximize sum of consecutive differences in a circular array
+```cpp
 long long int maxSum(int arr[], int n)
 {
     long long int ans=0;
@@ -205,16 +214,17 @@ long long int maxSum(int arr[], int n)
     }
     return ans;
 }
+```
 
 -----------------------------------------------------
-20. Minimum sum of absolute difference of pairs of two arrays
+## 20. Minimum sum of absolute difference of pairs of two arrays
 
 -----------------------------------------------------
-21. Program for Shortest Job First (or SJF) CPU Scheduling
+## 21. Program for Shortest Job First (or SJF) CPU Scheduling
 
 -----------------------------------------------------
-22. Program for Least Recently Used (LRU) Page Replacement algorithm
-
+## 22. Program for Least Recently Used (LRU) Page Replacement algorithm
+```cpp
 int pageFaults(int N, int C, int pages[]) {
     unordered_map<int, list<int>::iterator> m;
     list<int> mem;
@@ -234,13 +244,14 @@ int pageFaults(int N, int C, int pages[]) {
     }
     return ans;
 }
+```
 
 -----------------------------------------------------
-23. Smallest subset with sum greater than all other elements
+## 23. Smallest subset with sum greater than all other elements
 
 -----------------------------------------------------
-24. Chocolate Distribution Problem
-
+## 24. Chocolate Distribution Problem
+```cpp
 long long findMinDiff(vector<long long> a, long long n, long long m){
     sort(a.begin(),a.end());
     long long ans=LONG_LONG_MAX;
@@ -249,8 +260,9 @@ long long findMinDiff(vector<long long> a, long long n, long long m){
     }
     return ans;
 }
-
+```
 24.1 chocolate distribution 2--> gfg (first left,then right)
+```cpp
 long candies(int n, vector<int> arr) {
     int candy[n];
     for(int i=0;i<n;i++)candy[i]=1;
@@ -264,31 +276,32 @@ long candies(int n, vector<int> arr) {
     for(int i=0;i<n;i++)sum+=candy[i];
     return sum;
 }
+```
 
 -----------------------------------------------------
-25. DEFKIN -Defense of a Kingdom
+## 25. DEFKIN -Defense of a Kingdom
 
 -----------------------------------------------------
-26. DIEHARD -DIE HARD
+## 26. DIEHARD -DIE HARD
 
 -----------------------------------------------------
-27. GERGOVIA -Wine trading in Gergovia
+## 27. GERGOVIA -Wine trading in Gergovia
 
 -----------------------------------------------------
-28. Picking Up Chicks
+## 28. Picking Up Chicks
 
 -----------------------------------------------------
-29. CHOCOLA –Chocolate
+## 29. CHOCOLA –Chocolate
 
 -----------------------------------------------------
-30. ARRANGE -Arranging Amplifiers
+## 30. ARRANGE -Arranging Amplifiers
 
 -----------------------------------------------------
-31. K Centers Problem
+## 31. K Centers Problem
 
 -----------------------------------------------------
-32. Minimum Cost of ropes
-
+## 32. Minimum Cost of ropes
+```cpp
 long long minCost(long long arr[], long long n) {
     long long int ans=0;
     priority_queue<long long int, vector<long long int>, greater<long long int> >q;
@@ -303,10 +316,11 @@ long long minCost(long long arr[], long long n) {
     }
     return ans;
 }
+```
 
 -----------------------------------------------------
-33. Find smallest number with given number of digits and sum of digits
-
+## 33. Find smallest number with given number of digits and sum of digits
+```cpp
 string smallestNumber(int S, int D){
     string ans="";
     while(D--){
@@ -318,11 +332,12 @@ string smallestNumber(int S, int D){
     }
     return (S!=0) ?"-1":ans;
 }
+```
 
 -----------------------------------------------------
-34. Rearrange characters in a string such that no two adjacent are same
+## 34. Rearrange characters in a string such that no two adjacent are same
 
 -----------------------------------------------------
-35. Find maximum sum possible equal sum of three stacks
+## 35. Find maximum sum possible equal sum of three stacks
 
 -----------------------------------------------------

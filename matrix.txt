@@ -1,17 +1,102 @@
 1. Spiral traversal on a Matrix
 
+vector<int> spirallyTraverse(vector<vector<int> > matrix, int r, int c) {
+    int r1 = 0, r2 = r - 1, c1 = c - 1, c2 = 0;
+    vector<int> ans;
+    while (r1 <= r2 && c1 >= c2) {
+        if (r1 == r2)
+            for (int i = c2; i <= c1; i++) ans.push_back(matrix[r1][i]);
+        if (r1 != r2)
+            for (int i = c2; i <= c1; i++) ans.push_back(matrix[r1][i]);
+        if (c1 == c2)
+            for (int i = r1 + 1; i <= r2 - 1; i++) ans.push_back(matrix[i][c1]);
+        if (c1 != c2)
+            for (int i = r1 + 1; i <= r2 - 1; i++) ans.push_back(matrix[i][c1]);
+        if (r1 != r2)
+            for (int i = c1; i >= c2; i--) ans.push_back(matrix[r2][i]);
+        if (c1 != c2)
+            for (int i = r2 - 1; i >= r1 + 1; i--) ans.push_back(matrix[i][c2]);
+
+        r1++, r2--, c1--, c2++;
+    }
+
+    return ans;
+}
 ------------------------------------
-2. Search an element in a matriix
+2. Search an element in a matrix
+
+method 1: o(mn)
+
+method 2: o(log(mn))==o(log m + log n)
+bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        int m=matrix.size();
+        int n=matrix[0].size();
+        int b=0,e=m*n-1,mid,ele;
+        while(b<=e){
+            mid=b+(e-b)/2;
+            ele=matrix[mid/n][mid%n];
+            if(ele==target)return true;
+            else if(ele<target)b=mid+1;
+            else e=mid-1;
+        }
+        return false;
+    }
 
 ------------------------------------
 3. Find median in a row wise sorted matrix
 
+method 1: convert 2d matrix to 1d arrray then sort then find middle element => time = o(r*c*log(r*c)) space = o(r*c)
+  
+method 2: 
 ------------------------------------
 4. Find row with maximum no. of 1's
 
+method 1 : o(mn)
+int rowWithMax1s(vector<vector<int> > arr, int n, int m) {
+	    // code here
+	    int vec[n];
+	    for(int i=0;i<n;i++)vec[i]=-1;
+	    for(int i=0;i<n;i++){
+	        for(int j=0;j<m;j++){
+	            if(arr[i][j]==1){vec[i]=j;break;}
+	        }
+	    }
+	    int max=INT_MIN,pos=-1;
+	    for(int i=0;i<n;i++){
+	        if(((m-vec[i])>max)&&vec[i]!=-1){max=m-vec[i];pos=i;}
+	    }
+	    return pos;
+	}
+        
+method 2: for every row find pos of 1st 1 using binary search so =>o(mlogn)
+
+method 3: o(m+n)
+int rowWithMax1s(bool mat[R][C])
+{
+    // Initialize first row as row with max 1s
+    int max_row_index = 0;
+ 
+    // The function first() returns index of first 1 in row 0.
+    // Use this index to initialize the index of leftmost 1 seen so far
+    int j = first(mat[0], 0, C-1);
+    if (j == -1) // if 1 is not present in first row
+      j = C - 1;
+ 
+    for (int i = 1; i < R; i++)
+    {
+        // Move left until a 0 is found
+        while (j >= 0 && mat[i][j] == 1)
+        {
+           j = j-1;  // Update the index of leftmost 1 seen so far
+           max_row_index = i;  // Update max_row_index
+        }
+    }
+    return max_row_index;
+}
+
 ------------------------------------
 5. Print elements in sorted order using row-column wise sorted matrix
-
+2d=>1d then sort then 1d=>2d
 ------------------------------------
 6. Maximum size rectangle
 
@@ -20,6 +105,14 @@
 
 ------------------------------------
 8. Rotate matrix by 90 degrees
+
+void rotate(vector<vector<int> >& matrix) {
+    int n = matrix.size();
+    for (auto& v : matrix) reverse(v.begin(), v.end());
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            if (j > i) swap(matrix[i][j], matrix[j][i]);
+}
 
 ------------------------------------
 9. Kth smallest element in a row-cpumn wise sorted matrix

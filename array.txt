@@ -15,8 +15,122 @@ void rvereseArray(int arr[], int start, int end)
 ----------------------------------
 2. Find max and min in array
 
+method 1: cpmparisons= 1+2(n-2)==>worst ,  1+n-2==>best
+
+struct Pair getMinMax(int arr[], int n)
+{
+    struct Pair minmax;    
+    int i;
+     
+    // If there is only one element
+    // then return it as min and max both
+    if (n == 1)
+    {
+        minmax.max = arr[0];
+        minmax.min = arr[0];    
+        return minmax;
+    }
+     
+    // If there are more than one elements,
+    // then initialize min and max
+    if (arr[0] > arr[1])
+    {
+        minmax.max = arr[0];
+        minmax.min = arr[1];
+    }
+    else
+    {
+        minmax.max = arr[1];
+        minmax.min = arr[0];
+    }
+     
+    for(i = 2; i < n; i++)
+    {
+        if (arr[i] > minmax.max)    
+            minmax.max = arr[i];
+             
+        else if (arr[i] < minmax.min)    
+            minmax.min = arr[i];
+    }
+    return minmax;
+}
+
+method 2: even n==> 1 + 3*(n-2)/2, odd==>3(n-1)/2
+
+
+struct Pair getMinMax(int arr[], int n)
+{
+    struct Pair minmax;    
+    int i;
+     
+    // If array has even number of elements
+    // then initialize the first two elements
+    // as minimum and maximum
+    if (n % 2 == 0)
+    {
+        if (arr[0] > arr[1])    
+        {
+            minmax.max = arr[0];
+            minmax.min = arr[1];
+        }
+        else
+        {
+            minmax.min = arr[0];
+            minmax.max = arr[1];
+        }
+         
+        // Set the starting index for loop
+        i = 2;
+    }
+     
+    // If array has odd number of elements
+    // then initialize the first element as
+    // minimum and maximum
+    else
+    {
+        minmax.min = arr[0];
+        minmax.max = arr[0];
+         
+        // Set the starting index for loop
+        i = 1;
+    }
+     
+    // In the while loop, pick elements in
+    // pair and compare the pair with max
+    // and min so far
+    while (i < n - 1)
+    {        
+        if (arr[i] > arr[i + 1])        
+        {
+            if(arr[i] > minmax.max)    
+                minmax.max = arr[i];
+                 
+            if(arr[i + 1] < minmax.min)        
+                minmax.min = arr[i + 1];    
+        }
+        else       
+        {
+            if (arr[i + 1] > minmax.max)    
+                minmax.max = arr[i + 1];
+                 
+            if (arr[i] < minmax.min)        
+                minmax.min = arr[i];    
+        }
+         
+        // Increment the index by 2 as
+        // two elements are processed in loop
+        i += 2;
+    }        
+    return minmax;
+}
+
 ----------------------------------
 3. Find Kth max and min in array
+
+method 1: sorting = o(nlogn)
+
+method 2: using heap
+
 
 ----------------------------------
 4. Array contains 0,1,2 only. Sort without any algo.
@@ -153,18 +267,44 @@ void leftRotate(int arr[], int d, int n)
 } 
 
 --------------------------------------------------
-8. Largest sum contiguous subarray
+8. Largest sum contiguous subarray ====> KADANE'S ALGORITHM 
 
-int maxSubarraySum(int arr[], int n) {
-    int sum = 0, max_sum = 0, max_ele = INT_MIN;
-    for (int i = 0; i < n; i++) {
-        sum += arr[i];
-        if (sum < 0) sum = 0;
-        max_sum = max(sum, max_sum);
-        max_ele = max(max_ele, arr[i]);
-    }
-    return max_sum ? max_sum : max_ele;
+int maxSubarraySum(int arr[], int n){       
+        int curr_max=arr[0],g_max=arr[0];
+        for(int i=1;i<n;i++){
+            curr_max=max(arr[i],curr_max+arr[i]);
+            g_max=max(g_max,curr_max);
+        }
+        return g_max;
 }
+
+
+--------How to find the actual subarray that contains the max sum?-----------
+
+int maxSubarraySum(int arr[], int n){
+        
+        // Your code here
+        int curr_max=arr[0],g_max=arr[0],l_start=0,l_end=0,g_start=0,g_end=0;
+        for(int i=1;i<n;i++){
+            if(arr[i]+curr_max>arr[i]){
+                curr_max+=arr[i];
+                l_end=i;
+            }
+            else {
+                curr_max=arr[i];
+                l_start=i;
+                l_end=i;
+            }
+            if(g_max<curr_max){
+                g_max=curr_max;
+                g_start=l_start;
+                g_end=l_end;
+            }
+        }
+        cout<<g_start<<" "<<g_end<<endl;
+        return g_max;
+    }
+
 
 --------------------------------------------------
 9. Minimise the maximize difference between heights.
@@ -197,22 +337,91 @@ code: https://leetcode.com/problems/find-the-duplicate-number/solution/
 ---------------------------------------------------
 12. merge two sorted arrays without extra space.
 
+arr1[]-->n, arr2[]-->m
+naive: time=o(nmlogm) space=o(1)---> here time can be made o(n*m)-->if instead of sorting the second array we just find the right place in linear time(as in insertion sort) 
+void merge(int arr1[], int arr2[], int n, int m) {
+	    int i=0,j=0,k=n-1;
+	    while(i<n){
+	        if(arr1[i]>arr2[j]){
+	            swap(arr1[i],arr2[j]);
+	            sort(arr2,arr2+m);//dont do this-->do as we do in insertion sort
+	        }
+	        else if(arr1[i]<arr2[j])i++;
+	    }
+}
+
+efficient: time=o((n+m)log(n+m)), space= o(1) -------GAP METHOD----------
+
+int findGap(int gap){
+        if(gap==1)return 0;
+        return gap/2+gap%2;
+    }
+	void merge(int arr1[], int arr2[], int n, int m) {
+	    int gap=n+m;
+	    int i,j;
+	    for(gap=findGap(gap);gap>0;gap=findGap(gap)){
+	        for(i=0;i+gap<n;i++){
+	            if(arr1[i]>arr1[i+gap])swap(arr1[i],arr1[i+gap]);
+	        }
+	        for(j=gap>n?gap-n:0;i<n && j<m;i++,j++){
+	            if(arr1[i]>arr2[j])swap(arr1[i],arr2[j]);
+	        }
+	        if(j<m){
+	            for(j=0;j+gap<m;j++){
+	            if(arr2[j]>arr2[j+gap])swap(arr2[j],arr2[j+gap]);
+	            }
+	        }
+	    }
+        }
+	
+more efficient: o(n+m) -- > todo
+
 ---------------------------------------------------
 13. KADANE'S ALGORITHM
 
-int maxSubarraySum(int arr[], int n) {
-    int sum = 0, max_sum = 0, max_ele = INT_MIN;
-    for (int i = 0; i < n; i++) {
-        sum += arr[i];
-        if (sum < 0) sum = 0;
-        max_sum = max(sum, max_sum);
-        max_ele = max(max_ele, arr[i]);
+int maxSubarraySum(int arr[], int n){
+        
+        // Your code here
+        int curr_max=arr[0],g_max=arr[0],l_start=0,l_end=0,g_start=0,g_end=0;
+        for(int i=1;i<n;i++){
+            if(arr[i]+curr_max>arr[i]){
+                curr_max+=arr[i];
+                l_end=i;
+            }
+            else {
+                curr_max=arr[i];
+                l_start=i;
+                l_end=i;
+            }
+            if(g_max<curr_max){
+                g_max=curr_max;
+                g_start=l_start;
+                g_end=l_end;
+            }
+        }
+        cout<<g_start<<" "<<g_end<<endl;
+        return g_max;
     }
-    return max_sum ? max_sum : max_ele;
-}
+
 
 ---------------------------------------------------
-14. Merge intervals
+14. Merge intervals ==> o(nlogn) sort by start time and merge if start time of i+1 < finish time of i
+
+
+vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        vector<vector<int>>vec;
+        sort(intervals.begin(),intervals.end(),[](const vector<int>&a,const vector<int>&b){
+           return a[0]<b[0];
+        });
+        for(auto a:intervals){
+            if(vec.empty()||vec.back()[1]<a[0])vec.push_back(a);
+            else {vec.back()[1]=max(a[1],vec.back()[1]);}
+            
+        }
+        return vec;
+}
+
+            ---------------OR---------------
 
 vector<vector<int>> merge(vector<vector<int>>& intervals) {
     sort(intervals.begin(), intervals.end(), [](const vector<int>& a, const vector<int>& b) {
@@ -239,6 +448,9 @@ vector<vector<int>> merge(vector<vector<int>>& intervals) {
 --------------------------------------------------
 17. Best time to buy and sell stock.
 
+naive : o(n^2)
+
+efficient: o(n) 
 int maxProfit(vector<int>& prices) {
     int ans=0;
     int minPrice=INT_MAX;
@@ -251,7 +463,38 @@ int maxProfit(vector<int>& prices) {
 
 --------------------------------------------------
 18. Find all pair of integers in array whose sum equal to given number.
+naive : o(n^2) , o(1)
+eggicient : o(n) , o(n)
 
+int getPairsCount(int arr[], int n, int sum)
+{
+    unordered_map<int, int> m;
+ 
+    // Store counts of all elements in map m
+    for (int i = 0; i < n; i++)
+        m[arr[i]]++;
+ 
+    int twice_count = 0;
+ 
+    // iterate through each element and increment the
+    // count (Notice that every pair is counted twice)
+    for (int i = 0; i < n; i++) {
+        twice_count += m[sum - arr[i]];
+ 
+        // if (arr[i], arr[i]) pair satisfies the condition,
+        // then we need to ensure that the count is
+        // decreased by one such that the (arr[i], arr[i])
+        // pair is not considered
+        if (sum - arr[i] == arr[i])
+            twice_count--;
+    }
+ 
+    // return the half of twice_count
+    return twice_count / 2;
+}
+ 
+   -------------OR--------------------
+ 
 int getPairsCount(int arr[], int n, int k) {
     // code here
     unordered_map<int,int>m;
@@ -297,6 +540,26 @@ vector <int> commonElements (int A[], int B[], int C[], int n1, int n2, int n3)
     }
     return ans;
 }
+ ------or------
+ vector <int> commonElements (int A[], int B[], int C[], int n1, int n2, int n3)
+        {
+            //code here.
+            int i=0,j=0,k=0;
+            vector<int>vec;
+            int prev=INT_MIN;
+            while(i<n1 && j<n2 && k<n3){
+                if(A[i]==B[j] && B[j]==C[k]){
+                    if(prev==A[i]){
+                        i++;j++;k++;
+                    }
+                    else {vec.push_back(A[i]);prev=A[i];}
+                }   
+                else if(A[i]<B[j])i++;
+                else if(B[j]<C[k])j++;
+                else k++;
+            }
+            return vec;
+        }
 
 ------------------------------------------------------------------
 20. rearrange array with alternate positive and negative with o(1) extra space.
@@ -340,6 +603,36 @@ void rearrange(int arr[], int n) {
 -----------------------------------------------------------------------------
 21. find if there any subarray with sum equal to 0.
 
+naive: o(n^2) space o(1)
+bool subArrayExists(int arr[], int n)
+        {
+            for(int i=0;i<n;i++){
+                int sum=arr[i];
+                if(sum==0)return true;
+                for(int j=i+1;j<n;j++){
+                    sum+=arr[j];
+                    if(sum==0)return true;
+                }
+            }
+            return false;
+        }
+
+
+efficient: o(n) space o(n)
+
+bool subArrayExists(int arr[], int n)
+        {
+            unordered_set<int>s;
+            int sum=0;
+            for(int i=0;i<n;i++){
+                sum+=arr[i];
+                if(sum==0||s.find(sum)!=s.end())return true;
+                s.insert(sum);
+            }
+            return false;
+        }
+	
+-------------OR---------------------
 bool subArrayExists(int arr[], int n)
 {
     for(int i=1;i<n;i++) arr[i]+=arr[i-1];
@@ -353,6 +646,36 @@ bool subArrayExists(int arr[], int n)
 
 ----------------------------------------------------------
 22. facorial of a large number.
+
+int multiply(int res[],int x,int res_size){
+        int carry=0,prod;
+        for(int i=0;i<res_size;i++){
+            prod=x*res[i]+carry;
+            res[i]=prod%10;
+            carry=prod/10;
+        }
+        while(carry){
+            res[res_size++]=carry%10;
+            carry=carry/10;
+        }
+        return res_size;
+    } 
+    vector<int> factorial(int n){
+        int res[10000];
+        vector<int>vec;
+        int res_size=1;
+        res[0]=1;
+        for(int i=2;i<=n;i++){
+            res_size=multiply(res,i,res_size);
+        }
+        for(int i=res_size-1;i>=0;i--){
+            vec.push_back(res[i]);
+            //cout<<res[i]<<endl;
+        }
+        return vec;
+    }
+    
+----------------OR---------------------
 
 vector<int> factorial(int N){
     vector<int>ans({1});
@@ -376,11 +699,73 @@ vector<int> factorial(int N){
 ----------------------------------------------------------
 23. Maximum product subarray.
 
-----------------------------------------------------------
-24. longest consecutive subsequence.
+long long maxProduct(int *arr, int n) {
+	    long long mi=arr[0];
+	    long long ma=arr[0];
+	    long long prod=arr[0];
+	    for(int i=1;i<n;i++){
+	       if(arr[i]<0)swap(mi,ma);
+	       //mi=min(mi*arr[i],arr[i]);
+	       //ma=max(ma*arr[i],arr[i]);
+	       mi=mi*arr[i]<arr[i]?mi*arr[i]:arr[i];
+	       ma=ma*arr[i]>arr[i]?ma*arr[i]:arr[i];
+	       if(ma>prod)prod=ma;
+	    }
+	    return prod;
+	}
 
 ----------------------------------------------------------
+24. longest consecutive subsequence.
+int findLongestConseqSubseq(int arr[], int n)
+{
+    unordered_set<int> S;
+    int ans = 0;
+ 
+    // Hash all the array elements
+    for (int i = 0; i < n; i++)
+        S.insert(arr[i]);
+ 
+    // check each possible sequence from
+    // the start then update optimal length
+    for (int i = 0; i < n; i++)
+    {
+        // if current element is the starting
+        // element of a sequence
+        if (S.find(arr[i] - 1) == S.end())
+        {
+            // Then check for next elements
+            // in the sequence
+            int j = arr[i];
+            while (S.find(j) != S.end())
+                j++;
+ 
+            // update  optimal length if
+            // this length is more
+            ans = max(ans, j - arr[i]);
+        }
+    }
+    return ans;
+}
+----------------------------------------------------------
 25. array size n and number k, find all elements that appear more than n/k times.
+
+method 1: time=o(n^2) space=o(1)
+
+
+method 2: time=o(n) space= o(n) ==>using map
+
+int countOccurence(int arr[], int n, int k) {
+        map<int,int>m;
+        int c=0;
+        for(int i=0;i<n;i++){
+            if(m.find(arr[i])!=m.end())m[arr[i]]++;
+            else m.insert({arr[i],1});
+        }
+        for(auto itr=m.begin();itr!=m.end();itr++){
+            if(itr->second>(n/k))c++;
+        }
+        return c;
+    }
 
 --------------------------------------------------------------------------------
 26. maximum profit by buying and selling a share atmost twice.
@@ -398,7 +783,8 @@ string isSubset(int a1[], int a2[], int n, int m) {
 
 -------------------------------------------------------------------------------
 28. find triplet that sum to a given value.
-
+naive : time=o(n^3)  space=o(1)
+using hash tabel: time=o(n^2) space=o(n)
 O(N^2) time O(1) space : Using 2 pointers.
 bool find3Numbers(int A[], int n, int X)
 {
@@ -418,9 +804,62 @@ bool find3Numbers(int A[], int n, int X)
 }
 --------------------------------------------------------------------------------
 29. trapping rain water problem.
+ approach: calculate the ammount of water stored at every index...for each bar calculate the highest left and right bar then compute the vol...so loop from second element to second last element
+ 
+naive: time o(n^2) space o(1)
+
+efficient: time o(n) spca o(n)
+
+int findWater(int arr[], int n)
+{
+    // left[i] contains height of tallest bar to the
+    // left of i'th bar including itself
+    int left[n];
+
+    // Right [i] contains height of tallest bar to
+    // the right of ith bar including itself
+    int right[n];
+
+    // Initialize result
+    int water = 0;
+
+    // Fill left array
+    left[0] = arr[0];
+    for (int i = 1; i < n; i++)
+        left[i] = max(left[i - 1], arr[i]);
+
+    // Fill right array
+    right[n - 1] = arr[n - 1];
+    for (int i = n - 2; i >= 0; i--)
+        right[i] = max(right[i + 1], arr[i]);
+
+    // Calculate the accumulated water element by element
+    // consider the amount of water on i'th bar, the
+    // amount of water accumulated on this particular
+    // bar will be equal to min(left[i], right[i]) - arr[i] .
+    for (int i = 0; i < n; i++)
+        water += min(left[i], right[i]) - arr[i];
+
+    return water;
+}
+
+space efficient : time o(n) space o(1)==>todo
 
 -------------------------------------------------------------------------------
 30. chocolate distribution problem.
+
+time o(nlogn)
+
+long long findMinDiff(vector<long long> a, long long n, long long m){
+        sort(a.begin(),a.end());
+        long long min_=LONG_LONG_MAX;
+        for(int i=0;i<=n-m;i++){
+            min_=min(min_,a[i+m-1]-a[i]);
+        }
+        return min_;
+    }   
+
+-------------OR---------------------
 
 long long findMinDiff(vector<long long> a, long long n, long long m){
     sort(a.begin(),a.end());
@@ -467,8 +906,64 @@ void threeWayPartition(vector<int>& arr,int a, int b)
 -------------------------------------------------------------------------------
 33. Minimum swaps required bring elements less equal K together
 
+using sliding window concept==> time=o(n) space=o(1)
+int minSwap(int *arr, int n, int k) {
+    int cnt=0;
+    for(int i=0;i<n;i++){
+        if(arr[i]<=k)cnt++;
+    }
+    int c=0;;
+    for(int i=0;i<cnt;i++){
+        if(arr[i]>k)c++;
+    }
+    int count=c;
+    for(int i=1;i<=n-cnt;i++){
+        if(arr[i-1]>k)c--;
+        if(arr[i+cnt-1]>k)c++;
+        count=min(count,c);
+    }
+    return count;
+}
+
 -------------------------------------------------------------------------------
 34. Minimum no. of operations required to make an array palindrome
+
+int findMinOps(int arr[], int n)
+{
+    int ans = 0; // Initialize result
+ 
+    // Start from two corners
+    for (int i=0,j=n-1; i<=j;)
+    {
+        // If corner elements are same,
+        // problem reduces arr[i+1..j-1]
+        if (arr[i] == arr[j])
+        {
+            i++;
+            j--;
+        }
+ 
+        // If left element is greater, then
+        // we merge right two elements
+        else if (arr[i] > arr[j])
+        {
+            // need to merge from tail.
+            j--;
+            arr[j] += arr[j+1] ;
+            ans++;
+        }
+ 
+        // Else we merge left two elements
+        else
+        {
+            i++;
+            arr[i] += arr[i-1];
+            ans++;
+        }
+    }
+ 
+    return ans;
+}
 
 ------------------------------------------------------------------------------
 35. Median of 2 sorted arrays of equal size
